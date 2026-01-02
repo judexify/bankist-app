@@ -7,7 +7,7 @@
 // Data
 const account1 = {
   owner: 'Jonas Schmedtmann',
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1200],
+  movements: [200, 450, -400, 3000, -650, -130, 70, 1350],
   interestRate: 1.2,
   pin: 1111,
 };
@@ -63,23 +63,40 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 // const user = 'Steven Thomas Williams'; //stw
 
-const displayMovement = movements => {
+const displayMovement = (movements, sort = false) => {
   containerMovements.innerHTML = '';
 
-  movements.forEach((mov, i) => {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach((mov, i) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
-    const html = `
-    <div class="movements__row">
-          <div class="movements__type movements__type--${type}">${
-      i + 1
-    } ${type}</div>
-          
-          <div class="movements__value">${mov}</div>
-        </div>
-    `;
+    // const html = `
+    // <div class="movements__row">
+    //       <div class="movements__type movements__type--${type}">${
+    //   i + 1
+    // } ${type}</div>
 
-    containerMovements.insertAdjacentHTML('afterbegin', html);
+    //       <div class="movements__value">${mov}</div>
+    //     </div>
+    // `;
+
+    // containerMovements.insertAdjacentHTML('afterbegin', html);
+
+    const movement__row = document.createElement('div');
+    movement__row.classList.add('movements__row');
+
+    const movement__type = document.createElement('div');
+    movement__type.classList.add('movements__type');
+    movement__type.classList.add(`movements__type--${type}`);
+    movement__type.textContent = `${i + 1} ${type}`;
+
+    const movement__value = document.createElement('div');
+    movement__value.classList.add('movements__value');
+    movement__value.textContent = `${mov}`;
+
+    containerMovements.appendChild(movement__row);
+    movement__row.append(movement__type, movement__value);
   });
 };
 const createUsernames = accs => {
@@ -210,6 +227,15 @@ btnClose.addEventListener('click', e => {
 
   inputCloseUsername.value = inputClosePin.value = '';
 });
+
+let sorted = false;
+
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  displayMovement(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -225,7 +251,6 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 /////////////////////////////////////////////////
 
 const anyDeposits = movements.some(mov => mov > 5000);
-console.log(anyDeposits);
 
 const eurToUsd = 1.1;
 // const movementsUSD = movements.map((mov, i) => {
